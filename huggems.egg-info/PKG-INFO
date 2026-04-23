@@ -1,0 +1,33 @@
+Metadata-Version: 2.4
+Name: huggems
+Version: 0.1.0
+Summary: HuGGeMs - Human Gut Microbial Gene Markers Update Tool
+Author-email: Your Name <your.email@example.com>
+License: MIT
+Project-URL: Homepage, https://github.com/R840chen/HuGGeMs-update-pipeline
+Project-URL: Documentation, https://github.com/R840chen/HuGGeMs-update-pipeline#readme
+Project-URL: Repository, https://github.com/R840chen/HuGGeMs-update-pipeline
+Keywords: bioinformatics,metagenomics,gut-microbiome,marker-genes
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Topic :: Scientific/Engineering :: Bio-Informatics
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+Requires-Dist: click>=8.0.0
+Requires-Dist: biopython>=1.79
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: pytest-cov>=3.0.0; extra == "dev"
+Requires-Dist: black>=22.0.0; extra == "dev"
+Requires-Dist: isort>=5.10.0; extra == "dev"
+Requires-Dist: flake8>=4.0.0; extra == "dev"
+Requires-Dist: mypy>=0.950; extra == "dev"
+Provides-Extra: all
+Requires-Dist: drep>=3.4.0; extra == "all"
+Requires-Dist: biopython>=1.79; extra == "all"

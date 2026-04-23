@@ -1,0 +1,14 @@
+click>=8.0.0
+biopython>=1.79
+
+[all]
+drep>=3.4.0
+biopython>=1.79
+
+[dev]
+pytest>=7.0.0
+pytest-cov>=3.0.0
+black>=22.0.0
+isort>=5.10.0
+flake8>=4.0.0
+mypy>=0.950

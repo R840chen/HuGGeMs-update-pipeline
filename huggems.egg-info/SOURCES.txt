@@ -1,0 +1,10 @@
+pyproject.toml
+huggems/__init__.py
+huggems/cli.py
+huggems/utils.py
+huggems.egg-info/PKG-INFO
+huggems.egg-info/SOURCES.txt
+huggems.egg-info/dependency_links.txt
+huggems.egg-info/entry_points.txt
+huggems.egg-info/requires.txt
+huggems.egg-info/top_level.txt

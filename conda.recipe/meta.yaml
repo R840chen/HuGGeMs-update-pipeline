@@ -1,0 +1,48 @@
+package:
+  name: huggems
+  version: "0.1.0"
+
+source:
+  path: .
+
+build:
+  number: 0
+  script: {{ PYTHON }} -m pip install . -vv
+  entry_points:
+    - huggems = huggems.cli:cli
+
+requirements:
+  host:
+    - python >=3.8
+    - pip
+    - setuptools
+  run:
+    - python >=3.8
+    - click >=8.0.0
+    - biopython >=1.79
+
+test:
+  imports:
+    - huggems
+  requires:
+    - pytest
+  commands:
+    - huggems --help
+    - huggems presence --help
+    - huggems markers --help
+
+about:
+  home: https://github.com/R840chen/HuGGeMs-update-pipeline
+  license: MIT
+  license_family: MIT
+  summary: HuGGeMs - Human Gut Microbial Gene Markers Update Tool
+  description: |
+    A bioinformatics pipeline for updating HuGGeMs database.
+    Includes two main modules:
+    - presence: Detect if genomes exist in HuGGeMs dataset
+    - markers: Select and update marker genes
+  dev_url: https://github.com/R840chen/HuGGeMs-update-pipeline
+
+extra:
+  recipe-maintainers:
+    - your-github-username
