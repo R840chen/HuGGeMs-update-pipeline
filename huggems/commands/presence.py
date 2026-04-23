@@ -127,11 +127,8 @@ def presence(
         output_dir,
         "-sa", str(ani_threshold),  # ANI threshold
         "-nc", "0.60",  # contamination threshold
+        "-g", input_dir, new_dir,  # Both directories for comparison
     ]
-
-    # Add genome directories
-    cmd.extend(["-g", input_dir])
-    cmd.extend(["-l", new_dir])
 
     # Add threads
     if threads > 1:
