@@ -63,7 +63,36 @@ def validate_output_dir(ctx, param, value):
 def check_tool_available(tool_name: str) -> bool:
     """Check if a required tool is available in PATH."""
     import shutil
-    return shutil.which(tool_name) is not None
+    import platform
+    
+    # Direct check
+    if shutil.which(tool_name) is not None:
+        return True
+    
+    # Case-insensitive check for Linux (some tools have mixed case like dRep)
+    if platform.system() == "Linux":
+        import subprocess
+        try:
+            result = subprocess.run(
+                ["which", tool_name.lower()],
+                capture_output=True, text=True
+            )
+            if result.returncode == 0:
+                return True
+        except Exception:
+            pass
+        
+        # Try the actual command with --version as fallback
+        try:
+            result = subprocess.run(
+                [tool_name, "--version"],
+                capture_output=True, text=True
+            )
+            return result.returncode == 0
+        except Exception:
+            pass
+    
+    return False
 
 
 def check_tools_available(tools: list) -> dict:

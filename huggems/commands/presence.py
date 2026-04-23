@@ -25,8 +25,8 @@ from huggems.utils import (
 
 
 # Required tools for this command
-REQUIRED_TOOLS = ["drep"]  # Core requirement
-OPTIONAL_TOOLS = ["mash", "nucmer", "fastANI"]  # For different comparison methods
+REQUIRED_TOOLS = ["dRep"]  # Core requirement
+OPTIONAL_TOOLS = ["mash", "nucmer", "fastANI", "mummer.nucmer"]  # For different comparison methods
 
 
 @click.command()
