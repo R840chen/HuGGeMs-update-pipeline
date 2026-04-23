@@ -2,3 +2,4 @@
 # Install via: pip install -r requirements.txt
 
 drep
+networkx
