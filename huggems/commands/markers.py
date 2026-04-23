@@ -130,7 +130,7 @@ def markers(
     os.makedirs(os.path.join(output_dir, "markers"), exist_ok=True)
 
     # Check tool availability
-    log_step("Checking dependencies...")
+    log_step("Checking dependencies", "")
     tool_status = check_tools_available(REQUIRED_TOOLS + OPTIONAL_TOOLS)
 
     missing_required = [t for t in REQUIRED_TOOLS if not tool_status.get(t, False)]
@@ -144,7 +144,7 @@ def markers(
         click.echo(f"  Available tools: {', '.join(available_optional)}")
 
     # Check database files
-    log_step("Checking database files...")
+    log_step("Checking database files", "")
     for db_path, db_name in [(uniref90, "UniRef90"), (uniref50, "UniRef50")]:
         if not os.path.exists(db_path):
             log_warning(f"{db_name} not found at: {db_path}")
@@ -169,7 +169,7 @@ def markers(
         run_build_db_step(output_dir, verbose)
 
     # Generate summary
-    log_step("Generating summary report...")
+    log_step("Generating summary report", "")
     summary_file = os.path.join(output_dir, "markers_summary.txt")
 
     with open(summary_file, "w") as f:
@@ -194,7 +194,7 @@ def markers(
 
 def run_annotation_step(input_dir, output_dir, uniref90, uniref50, cpus, evalue, identity, coverage, verbose):
     """Run Prokka annotation and Diamond search."""
-    log_step("Step 1: Gene Annotation")
+    log_step("Step 1: Gene Annotation", "")
 
     annotation_dir = os.path.join(output_dir, "annotations")
     prokka_dir = os.path.join(annotation_dir, "prokka")
@@ -274,7 +274,7 @@ def run_annotation_step(input_dir, output_dir, uniref90, uniref50, cpus, evalue,
 
 def run_core_genes_step(output_dir, verbose):
     """Identify core genes across genomes."""
-    log_step("Step 2: Core Gene Identification")
+    log_step("Step 2: Core Gene Identification", "")
 
     annotation_dir = os.path.join(output_dir, "annotations")
     core_dir = os.path.join(output_dir, "core_genes")
@@ -289,7 +289,7 @@ def run_core_genes_step(output_dir, verbose):
 
 def run_markers_step(output_dir, huggems_ref, verbose):
     """Select marker genes from core genes."""
-    log_step("Step 3: Marker Gene Selection")
+    log_step("Step 3: Marker Gene Selection", "")
 
     core_dir = os.path.join(output_dir, "core_genes")
     marker_dir = os.path.join(output_dir, "markers")
@@ -303,7 +303,7 @@ def run_markers_step(output_dir, huggems_ref, verbose):
 
 def run_build_db_step(output_dir, verbose):
     """Build Bowtie2 database for profiling."""
-    log_step("Step 4: Build Profiling Database")
+    log_step("Step 4: Build Profiling Database", "")
 
     marker_dir = os.path.join(output_dir, "markers")
     db_dir = os.path.join(output_dir, "db")

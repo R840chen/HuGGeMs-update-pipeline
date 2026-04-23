@@ -102,7 +102,7 @@ def presence(
     os.makedirs(output_dir, exist_ok=True)
 
     # Check tool availability
-    log_step("Checking dependencies...")
+    log_step("Checking dependencies", "")
     tool_status = check_tools_available(REQUIRED_TOOLS + OPTIONAL_TOOLS)
 
     missing_required = [t for t in REQUIRED_TOOLS if not tool_status.get(t, False)]
@@ -118,7 +118,7 @@ def presence(
         click.echo("  No optional comparison tools available (MASH, nucmer, FastANI)")
 
     # Run dRep pipeline
-    log_step("Running genome comparison...")
+    log_step("Running genome comparison", "")
 
     # Build command based on original drep_pipeline.py
     cmd = [
@@ -154,7 +154,7 @@ def presence(
             sys.exit(1)
 
     # Generate summary report
-    log_step("Generating summary report...")
+    log_step("Generating summary report", "")
     summary_file = os.path.join(output_dir, "presence_summary.txt")
 
     with open(summary_file, "w") as f:
