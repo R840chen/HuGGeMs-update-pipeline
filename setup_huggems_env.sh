@@ -11,18 +11,21 @@ echo "HuGGeMs-update Environment Setup"
 echo "=========================================="
 
 # Create conda environment
-echo "[1/5] Creating conda environment: $ENV_NAME"
+echo "[1/6] Creating conda environment: $ENV_NAME"
 conda create -n $ENV_NAME python=3.9 -y
 
 # Activate environment
-echo "[2/5] Activating environment..."
+echo "[2/6] Activating environment..."
 source $(conda info --base)/etc/profile.d/conda.sh
 conda activate $ENV_NAME
 
-# Install main bioinformatics tools
-echo "[3/5] Installing bioinformatics tools..."
-conda install -c bioconda -c conda-forge \
-    prokka=1.14.6 \
+# Install prokka first (with version)
+echo "[3/6] Installing prokka..."
+conda install -c bioconda prokka=1.14.6 -y
+
+# Install other bioinformatics tools
+echo "[4/6] Installing other bioinformatics tools..."
+conda install -c bioconda \
     diamond \
     mmseqs2 \
     art \
@@ -36,11 +39,11 @@ conda install -c bioconda -c conda-forge \
     -y
 
 # Install additional dependencies
-echo "[4/5] Installing additional dependencies..."
+echo "[5/6] Installing additional dependencies..."
 conda install -c conda-forge gsl=2.5 -y
 
 # Install dRep via pip (not available in conda)
-echo "[5/5] Installing dRep via pip..."
+echo "[6/6] Installing dRep via pip..."
 pip install -r requirements.txt
 
 echo ""

@@ -1,12 +1,12 @@
 # HuGGeMs-update Conda Environment Configuration
-# Version: 1.0
+# Version: 1.1
 # Description: Environment for HuGGeMs database update pipelines
 
 name: huggems-update
 
 channels:
-  - conda-forge
   - bioconda
+  - conda-forge
   - defaults
 
 dependencies:
