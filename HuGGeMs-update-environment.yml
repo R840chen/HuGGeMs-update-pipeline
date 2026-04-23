@@ -45,32 +45,3 @@ pip:
 # Platform-specific notes:
 # - On Apple Silicon (arm64), some packages may need compilation from source
 # - centrifuge may have compatibility issues on newer systems; consider alternatives
-
----
-# Alternative: Split into multiple environments if dependency conflicts occur
-
-# Environment for Part I only (genome comparison)
-# name: huggems-part1
-# channels: [conda-forge, bioconda, defaults]
-# dependencies:
-#   - python=3.9
-#   - mash
-#   - mummer
-#   - fastani
-# pip:
-#   - drep
-
-# Environment for Part II only (marker selection)
-# name: huggems-part2
-# channels: [conda-forge, bioconda, defaults]
-# dependencies:
-#   - python=3.9
-#   - prokka=1.14.6
-#   - diamond
-#   - mmseqs2
-#   - art
-#   - bowtie2
-#   - samtools
-#   - bamutil
-#   - biopython
-#   - gsl=2.5
