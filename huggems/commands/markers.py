@@ -118,11 +118,7 @@ def markers(
     5. Build profiling database
 
     Example:
-        huggems markers --input-dir ./genomes/ \\
-                        --uniref90 ./db/uniref90.dmnd \\
-                        --uniref50 ./db/uniref50.dmnd \\
-                        --huggems-ref ./db/HuGGeMs_ref/ \\
-                        --output-dir ./results/
+        huggems markers --input-dir ./genomes/ --uniref90 ./db/uniref90.dmnd --uniref50 ./db/uniref50.dmnd --huggems-ref ./db/HuGGeMs_ref/ --output-dir ./results/
     """
     setup_logging(verbose=verbose)
     log_step("Part II: Marker Gene Selection", "Prokka -> Diamond -> Core Gene -> Markers")

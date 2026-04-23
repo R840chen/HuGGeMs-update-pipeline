@@ -18,8 +18,8 @@ def cli():
     A bioinformatics pipeline for updating HuGGeMs database.
 
     Commands:
-        presence   Part I - Detect if genomes exist in HuGGeMs dataset
-        markers    Part II - Select and update marker genes
+        presence  - Part I - Detect if genomes exist in HuGGeMs dataset
+        markers   - Part II - Select and update marker genes
 
     Examples:
         huggems presence --help

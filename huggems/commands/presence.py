@@ -93,10 +93,7 @@ def presence(
     to determine if they are already represented in the database.
 
     Example:
-        huggems presence --new-dir ./query_genomes/ \\
-                        --input-dir ./HuGGeMs_representatives/ \\
-                        --output-dir ./results/ \\
-                        --method fastANI
+        huggems presence --new-dir ./query_genomes/ --input-dir ./HuGGeMs_representatives/ --output-dir ./results/ --method fastANI
     """
     setup_logging(verbose=verbose)
     log_step("Part I: Presence Detection", "Using dRep/MASH/FastANI pipeline")
