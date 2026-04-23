@@ -38,10 +38,6 @@ dependencies:
   - pandas
   - scipy
 
-# Install dRep via pip (not available in conda)
-pip:
-  - drep
-
 # Platform-specific notes:
 # - On Apple Silicon (arm64), some packages may need compilation from source
 # - centrifuge may have compatibility issues on newer systems; consider alternatives

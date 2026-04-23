@@ -39,9 +39,9 @@ conda install -c bioconda -c conda-forge \
 echo "[4/5] Installing additional dependencies..."
 conda install -c conda-forge gsl=2.5 -y
 
-# Install dRep via pip
+# Install dRep via pip (not available in conda)
 echo "[5/5] Installing dRep via pip..."
-pip install drep
+pip install -r requirements.txt
 
 echo ""
 echo "=========================================="
