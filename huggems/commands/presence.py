@@ -100,7 +100,7 @@ def cleanup_copied_files(dest_map, verbose=False):
     return results
 
 
-def run_drep(output_dir, genome_list_path, threads, ani_threshold=95.0):
+def run_drep(output_dir, genome_list_path, threads, ani_threshold=95.0, skip_secondary=False):
     """Run dRep compare."""
     drep_cmd = [
         'dRep', 'compare', str(output_dir),
@@ -110,8 +110,15 @@ def run_drep(output_dir, genome_list_path, threads, ani_threshold=95.0):
         '--multiround_primary_clustering',
         '--primary_chunksize', '3000',
         '-d',
-        '-nc', '0.6',
     ]
+    
+    # Only use -nc for secondary clustering
+    if not skip_secondary:
+        drep_cmd.extend(['-nc', '0.6'])
+    else:
+        drep_cmd.append('--SkipSecondary')
+        print('Note: Skipping secondary clustering (using only MASH primary clustering)')
+    
     print('Constructed dRep command:')
     print(' '.join(drep_cmd))
     
@@ -258,18 +265,20 @@ def extract_unique_newgenomes(drep_out, new_dir, input_dir, unique_dest, verbose
               help='Path to write unique genome list (default: <unique-dest>/unique_genomes.txt)')
 @click.option('--cleanup-copied', is_flag=True,
               help='After pipeline finishes, remove files copied from --new-dir out of --input-dir')
+@click.option('--skip-secondary', is_flag=True,
+              help='Skip secondary clustering (fastANI), use only MASH primary clustering')
 @click.option('--verbose', '-v', is_flag=True,
               help='Enable verbose output')
 def presence(new_dir, input_dir, output_dir, suffix, threads, ani_threshold,
              genome_list, dry_run, extract_unique, unique_dest, unique_list,
-             cleanup_copied, verbose):
+             cleanup_copied, skip_secondary, verbose):
     """Part I - Detect if genomes exist in HuGGeMs dataset
     
     Compares query genomes against HuGGeMs representative genomes
     to determine if they are already represented in the database.
     
     Example:
-        huggems presence --new-dir ./query_genomes/ --input-dir ./HuGGeMs_representatives/ --output-dir ./results/ --threads 64 --extract-unique --cleanup-copied
+        huggems presence --new-dir ./query_genomes/ --input-dir ./HuGGeMs_representatives/ --output-dir ./results/ --threads 64 --skip-secondary --extract-unique --cleanup-copied
     """
     setup_logging(verbose=verbose)
     log_step("Part I: Presence Detection", "Using dRep pipeline")
@@ -317,7 +326,7 @@ def presence(new_dir, input_dir, output_dir, suffix, threads, ani_threshold,
     
     # Step 3: Run dRep
     log_step("Running dRep compare", "")
-    rc = run_drep(output_dir, genome_list_path, threads, ani_threshold)
+    rc = run_drep(output_dir, genome_list_path, threads, ani_threshold, skip_secondary)
     if rc != 0:
         print(f'dRep exited with return code {rc}', file=sys.stderr)
         sys.exit(rc)

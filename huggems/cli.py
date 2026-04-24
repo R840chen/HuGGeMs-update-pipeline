@@ -22,7 +22,7 @@ def cli():
         markers   - Part II - Select and update marker genes
 
     Examples:
-        huggems presence --help
+        huggems presence --new-dir ./query/ --input-dir ./ref/ --output-dir ./results/ --skip-secondary --extract-unique
         huggems markers --help
     """
     pass
