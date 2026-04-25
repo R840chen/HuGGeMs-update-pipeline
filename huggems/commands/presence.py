@@ -100,7 +100,7 @@ def cleanup_copied_files(dest_map, verbose=False):
     return results
 
 
-def run_drep(output_dir, genome_list_path, threads, ani_threshold=95.0, skip_secondary=False):
+def run_drep(output_dir, genome_list_path, threads, ani_threshold=95.0, skip_secondary=False, skip_analyze=False):
     """Run dRep compare."""
     drep_cmd = [
         'dRep', 'compare', str(output_dir),
@@ -118,6 +118,11 @@ def run_drep(output_dir, genome_list_path, threads, ani_threshold=95.0, skip_sec
     else:
         drep_cmd.append('--SkipSecondary')
         print('Note: Skipping secondary clustering (using only MASH primary clustering)')
+    
+    # Skip analyze step to avoid plotting errors with --SkipSecondary
+    if skip_analyze:
+        drep_cmd.append('--skipAn')
+        print('Note: Skipping dRep analyze step (cluster evaluation and plotting)')
     
     print('Constructed dRep command:')
     print(' '.join(drep_cmd))
@@ -267,11 +272,13 @@ def extract_unique_newgenomes(drep_out, new_dir, input_dir, unique_dest, verbose
               help='After pipeline finishes, remove files copied from --new-dir out of --input-dir')
 @click.option('--skip-secondary', is_flag=True,
               help='Skip secondary clustering (fastANI), use only MASH primary clustering')
+@click.option('--skip-analyze', is_flag=True,
+              help='Skip dRep analyze step (cluster evaluation and plotting)')
 @click.option('--verbose', '-v', is_flag=True,
               help='Enable verbose output')
 def presence(new_dir, input_dir, output_dir, suffix, threads, ani_threshold,
              genome_list, dry_run, extract_unique, unique_dest, unique_list,
-             cleanup_copied, skip_secondary, verbose):
+             cleanup_copied, skip_secondary, skip_analyze, verbose):
     """Part I - Detect if genomes exist in HuGGeMs dataset
     
     Compares query genomes against HuGGeMs representative genomes
@@ -326,7 +333,7 @@ def presence(new_dir, input_dir, output_dir, suffix, threads, ani_threshold,
     
     # Step 3: Run dRep
     log_step("Running dRep compare", "")
-    rc = run_drep(output_dir, genome_list_path, threads, ani_threshold, skip_secondary)
+    rc = run_drep(output_dir, genome_list_path, threads, ani_threshold, skip_secondary, skip_analyze)
     if rc != 0:
         print(f'dRep exited with return code {rc}', file=sys.stderr)
         sys.exit(rc)
