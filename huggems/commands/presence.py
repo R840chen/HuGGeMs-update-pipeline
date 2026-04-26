@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 HuGGeMs presence detection command (Part I)
-Detects if genomes exist in the HuGGeMs dataset using dRep
+Detects if genomes exist in the HuGGeMs dataset using dRep (MASH primary clustering only)
 """
 
 import os
@@ -28,7 +28,7 @@ from huggems.utils import (
 
 # Required tools for this command
 REQUIRED_TOOLS = ["dRep"]
-OPTIONAL_TOOLS = ["mash", "nucmer", "fastANI", "mummer"]
+OPTIONAL_TOOLS = ["mash"]
 
 
 # ---------- utilities ----------
@@ -100,36 +100,54 @@ def cleanup_copied_files(dest_map, verbose=False):
     return results
 
 
-def run_drep(output_dir, genome_list_path, threads, ani_threshold=95.0, skip_secondary=False, skip_analyze=False):
-    """Run dRep compare."""
+def run_drep(output_dir, genome_list_path, threads, mash_threshold=0.05):
+    """Run dRep compare using MASH primary clustering only (secondary clustering skipped).
+
+    Parameters
+    ----------
+    output_dir : str or Path
+        dRep working/output directory.
+    genome_list_path : str or Path
+        File listing one genome path per line.
+    threads : int
+        Number of parallel threads.
+    mash_threshold : float
+        MASH distance threshold for primary clustering (-pa flag).
+        This is a genetic *distance* (0–1), NOT an ANI percentage.
+        Default 0.05 corresponds roughly to 95% MASH similarity.
+    """
     drep_cmd = [
         'dRep', 'compare', str(output_dir),
         '-p', str(threads),
         '-g', str(genome_list_path),
-        '-pa', str(ani_threshold / 100),  # Convert percentage to fraction
+        '-pa', str(mash_threshold),
         '--multiround_primary_clustering',
         '--primary_chunksize', '3000',
         '-d',
+        '--SkipSecondary',
     ]
-    
-    # Only use -nc for secondary clustering
-    if not skip_secondary:
-        drep_cmd.extend(['-nc', '0.6'])
-    else:
-        drep_cmd.append('--SkipSecondary')
-        print('Note: Skipping secondary clustering (using only MASH primary clustering)')
-    
-    # Skip analyze step to avoid plotting errors with --SkipSecondary
-    if skip_analyze:
-        drep_cmd.append('--skipAn')
-        print('Note: Skipping dRep analyze step (cluster evaluation and plotting)')
-    
+
+    print('Note: Using MASH primary clustering only (secondary clustering skipped)')
     print('Constructed dRep command:')
     print(' '.join(drep_cmd))
-    
+
     try:
         proc = subprocess.run(drep_cmd, check=False)
-        return proc.returncode
+        rc = proc.returncode
+
+        # dRep exits non-zero when --SkipSecondary causes plotting to fail.
+        # Cdb.csv is written before the Analyze step, so if it exists we
+        # treat non-zero exit as a non-fatal plotting error.
+        if rc != 0:
+            cdb = Path(output_dir) / 'data_tables' / 'Cdb.csv'
+            if cdb.exists():
+                print(
+                    f'Warning: dRep exited with code {rc}, but {cdb} exists — '
+                    'treating as success (plotting errors are non-fatal with --SkipSecondary).',
+                    file=sys.stderr,
+                )
+                return 0
+        return rc
     except FileNotFoundError:
         print('Error: dRep executable not found in PATH.', file=sys.stderr)
         return 127
@@ -256,8 +274,9 @@ def extract_unique_newgenomes(drep_out, new_dir, input_dir, unique_dest, verbose
               help='Suffix of new genome files (default: fna)')
 @click.option('--threads', default=64, type=int,
               help='Number of threads for dRep (default: 64)')
-@click.option('--ani-threshold', default=95.0, type=float,
-              help='ANI threshold for considering genomes as same species (default: 95.0)')
+@click.option('--mash-threshold', default=0.05, type=float,
+              help='MASH distance threshold for primary clustering, 0–1 '
+                   '(default: 0.05, roughly equivalent to 95%% MASH similarity)')
 @click.option('--genome-list', type=click.Path(),
               help='Path to genome list file (default: <input-dir>/genome_list.txt)')
 @click.option('--dry-run', is_flag=True,
@@ -270,74 +289,72 @@ def extract_unique_newgenomes(drep_out, new_dir, input_dir, unique_dest, verbose
               help='Path to write unique genome list (default: <unique-dest>/unique_genomes.txt)')
 @click.option('--cleanup-copied', is_flag=True,
               help='After pipeline finishes, remove files copied from --new-dir out of --input-dir')
-@click.option('--skip-secondary', is_flag=True,
-              help='Skip secondary clustering (fastANI), use only MASH primary clustering')
-@click.option('--skip-analyze', is_flag=True,
-              help='Skip dRep analyze step (cluster evaluation and plotting)')
 @click.option('--verbose', '-v', is_flag=True,
               help='Enable verbose output')
-def presence(new_dir, input_dir, output_dir, suffix, threads, ani_threshold,
+def presence(new_dir, input_dir, output_dir, suffix, threads, mash_threshold,
              genome_list, dry_run, extract_unique, unique_dest, unique_list,
-             cleanup_copied, skip_secondary, skip_analyze, verbose):
+             cleanup_copied, verbose):
     """Part I - Detect if genomes exist in HuGGeMs dataset
-    
-    Compares query genomes against HuGGeMs representative genomes
-    to determine if they are already represented in the database.
-    
+
+    Compares query genomes against HuGGeMs representative genomes using
+    MASH-based primary clustering only (secondary fastANI clustering is
+    always skipped).
+
     Example:
-        huggems presence --new-dir ./query_genomes/ --input-dir ./HuGGeMs_representatives/ --output-dir ./results/ --threads 64 --skip-secondary --extract-unique --cleanup-copied
+        huggems presence --new-dir ./query_genomes/ --input-dir ./HuGGeMs_representatives/ \\
+            --output-dir ./results/ --threads 64 --extract-unique --cleanup-copied
     """
     setup_logging(verbose=verbose)
-    log_step("Part I: Presence Detection", "Using dRep pipeline")
-    
+    log_step("Part I: Presence Detection", "Using dRep pipeline (MASH primary clustering)")
+
     input_dir = Path(input_dir).expanduser().resolve()
     new_dir = Path(new_dir).expanduser().resolve()
     output_dir = Path(output_dir).expanduser().resolve()
-    
+
     output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Check tool availability
     log_step("Checking dependencies", "")
     tool_status = check_tools_available(REQUIRED_TOOLS)
-    
+
     if not tool_status.get('dRep', False):
         log_warning("Missing required tool: dRep")
         log_warning("Please install: conda install -c bioconda drep")
         sys.exit(1)
-    
+
     # Determine genome list path
     genome_list_path = (
         Path(genome_list).expanduser().resolve()
         if genome_list
         else input_dir / 'genome_list.txt'
     )
-    
+
     # Step 1: Copy new genomes into input-dir
     log_step("Copying new genomes", "")
     suffix = suffix.lower().lstrip('.')
     copied_files, dest_map = copy_new_files(new_dir, input_dir, suffix)
     print(f'Copied {len(copied_files)} files into {input_dir} (converted to .fna)')
-    
+
     if verbose:
         for p in copied_files:
             print(f'  copied: {p}')
-    
+
     # Step 2: Write genome list
     log_step("Writing genome list", "")
     total = write_genome_list(input_dir, genome_list_path)
     print(f'Wrote genome list to {genome_list_path} with {total} entries')
-    
+
     if dry_run:
         print('Dry run requested; exiting before running dRep')
         sys.exit(0)
-    
+
     # Step 3: Run dRep
     log_step("Running dRep compare", "")
-    rc = run_drep(output_dir, genome_list_path, threads, ani_threshold, skip_secondary, skip_analyze)
+    rc = run_drep(output_dir, genome_list_path, threads, mash_threshold)
     if rc != 0:
         print(f'dRep exited with return code {rc}', file=sys.stderr)
         sys.exit(rc)
-    
+
     # Step 4: Extract unique genomes
     if extract_unique:
         log_step("Extracting unique genomes", "")
@@ -350,7 +367,7 @@ def presence(new_dir, input_dir, output_dir, suffix, threads, ani_threshold,
             output_dir, new_dir, input_dir, u_dest, verbose=verbose
         )
         print(f'Extracted {len(unique)} unique genomes')
-        
+
         u_list_path = (
             Path(unique_list).expanduser().resolve()
             if unique_list
@@ -360,13 +377,13 @@ def presence(new_dir, input_dir, output_dir, suffix, threads, ani_threshold,
             for _, dest_path in unique:
                 fh.write(str(dest_path) + '\n')
         print(f'Unique genome list written to: {u_list_path}')
-    
+
     # Step 5: Cleanup
     if cleanup_copied:
         log_step("Cleaning up copied files", "")
         cleanup_results = cleanup_copied_files(dest_map, verbose=verbose)
         success_count = sum(1 for _, ok in cleanup_results if ok)
         print(f'Cleanup done: {success_count} removed, {len(cleanup_results) - success_count} failed/skipped')
-    
+
     log_success("Part I completed!")
     print(f'\nResults directory: {output_dir}')
