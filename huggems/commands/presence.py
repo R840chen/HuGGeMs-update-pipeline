@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 HuGGeMs presence detection command (Part I)
-Detects if genomes exist in the HuGGeMs dataset using dRep (MASH primary clustering only)
+Detects if genomes exist in the HuGGeMs dataset using dRep
 """
 
 import os
@@ -101,7 +101,7 @@ def cleanup_copied_files(dest_map, verbose=False):
 
 
 def run_drep(output_dir, genome_list_path, threads, mash_threshold=0.05):
-    """Run dRep compare using MASH primary clustering only (secondary clustering skipped).
+    """Run dRep compare with full two-step clustering (MASH primary + fastANI secondary).
 
     Parameters
     ----------
@@ -123,31 +123,16 @@ def run_drep(output_dir, genome_list_path, threads, mash_threshold=0.05):
         '-pa', str(mash_threshold),
         '--multiround_primary_clustering',
         '--primary_chunksize', '3000',
+        '-nc', '0.6',
         '-d',
-        '--SkipSecondary',
     ]
 
-    print('Note: Using MASH primary clustering only (secondary clustering skipped)')
     print('Constructed dRep command:')
     print(' '.join(drep_cmd))
 
     try:
         proc = subprocess.run(drep_cmd, check=False)
-        rc = proc.returncode
-
-        # dRep exits non-zero when --SkipSecondary causes plotting to fail.
-        # Cdb.csv is written before the Analyze step, so if it exists we
-        # treat non-zero exit as a non-fatal plotting error.
-        if rc != 0:
-            cdb = Path(output_dir) / 'data_tables' / 'Cdb.csv'
-            if cdb.exists():
-                print(
-                    f'Warning: dRep exited with code {rc}, but {cdb} exists — '
-                    'treating as success (plotting errors are non-fatal with --SkipSecondary).',
-                    file=sys.stderr,
-                )
-                return 0
-        return rc
+        return proc.returncode
     except FileNotFoundError:
         print('Error: dRep executable not found in PATH.', file=sys.stderr)
         return 127
@@ -297,15 +282,14 @@ def presence(new_dir, input_dir, output_dir, suffix, threads, mash_threshold,
     """Part I - Detect if genomes exist in HuGGeMs dataset
 
     Compares query genomes against HuGGeMs representative genomes using
-    MASH-based primary clustering only (secondary fastANI clustering is
-    always skipped).
+    dRep (MASH primary clustering + fastANI secondary clustering).
 
     Example:
         huggems presence --new-dir ./query_genomes/ --input-dir ./HuGGeMs_representatives/ \\
             --output-dir ./results/ --threads 64 --extract-unique --cleanup-copied
     """
     setup_logging(verbose=verbose)
-    log_step("Part I: Presence Detection", "Using dRep pipeline (MASH primary clustering)")
+    log_step("Part I: Presence Detection", "Using dRep pipeline")
 
     input_dir = Path(input_dir).expanduser().resolve()
     new_dir = Path(new_dir).expanduser().resolve()
