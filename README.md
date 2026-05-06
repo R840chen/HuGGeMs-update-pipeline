@@ -4,6 +4,26 @@ A pipeline used to update the **Human Gut Microbial Gene Markers (HuGGeMs)** dat
 
 ---
 
+## Installation
+
+### Step 1 — Clone the repository
+
+```bash
+git clone https://github.com/R840chen/HuGGeMs-update-pipeline.git
+cd HuGGeMs-update-pipeline
+```
+
+### Step 2 — Create the conda environment
+
+```bash
+bash setup_huggems_env.sh
+conda activate huggems-update
+```
+
+This script creates the full conda environment and installs all required tools and the `huggems` Python package in one step.
+
+---
+
 ## Overview
 
 This pipeline consists of two parts:
@@ -60,26 +80,6 @@ diamond makedb --in uniref50.fasta.gz -d uniref50.dmnd
 ```
 
 > **Disk space estimate:** UniRef90 + Diamond DB ~50 GB, UniRef50 + Diamond DB ~25 GB, HuGGeMs genomes ~50–100 GB, working space 100+ GB. **Total: ~250–300 GB recommended.**
-
----
-
-## Installation
-
-### Step 1 — Clone the repository
-
-```bash
-git clone https://github.com/R840chen/HuGGeMs-update-pipeline.git
-cd HuGGeMs-update-pipeline
-```
-
-### Step 2 — Create the conda environment
-
-```bash
-bash setup_huggems_env.sh
-conda activate huggems-update
-```
-
-This script creates the full conda environment and installs all required tools and the `huggems` Python package in one step.
 
 ---
 
