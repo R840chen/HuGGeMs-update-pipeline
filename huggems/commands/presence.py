@@ -100,7 +100,7 @@ def cleanup_copied_files(dest_map, verbose=False):
     return results
 
 
-def run_drep(output_dir, genome_list_path, threads, mash_threshold=0.05):
+def run_drep(output_dir, genome_list_path, threads, mash_threshold=0.95):
     """Run dRep compare with full two-step clustering (MASH primary + fastANI secondary).
 
     Parameters
@@ -114,7 +114,7 @@ def run_drep(output_dir, genome_list_path, threads, mash_threshold=0.05):
     mash_threshold : float
         MASH distance threshold for primary clustering (-pa flag).
         This is a genetic *distance* (0–1), NOT an ANI percentage.
-        Default 0.05 corresponds roughly to 95% MASH similarity.
+        Default 0.95 corresponds roughly to 95% MASH similarity.
     """
     drep_cmd = [
         'dRep', 'compare', str(output_dir),
