@@ -35,7 +35,7 @@ conda install -c bioconda \
     biopython \
     mash \
     mummer \
-    fastani \
+    skani \
     -y
 
 # Install dRep and dependencies via pip
