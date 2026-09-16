@@ -29,7 +29,7 @@ This script creates the full conda environment and installs all required tools a
 This pipeline consists of two parts:
 
 ### Part I — Genome Presence Detection
-Determines whether a provided genome (or species) is already represented in the HuGGeMs dataset by computing genome-level distances against the 11,167 HuGGeMs representative genome clusters.
+Determines whether a provided genome (or species) is already represented in the HuGGeMs dataset by computing genome-level distances against the 11,376 HuGGeMs representative genome clusters.
 
 - Uses **dRep** (compare mode) as the core tool
 - Outputs a report table listing each query genome's nearest representative, ANI value, and presence/absence status
@@ -92,7 +92,7 @@ Check whether your query genomes are already represented in HuGGeMs:
 ```bash
 huggems presence \
   --new-dir /path/to/query_genomes/ \
-  --rep-dir /path/to/11167_representatives/ \
+  --input-dir /path/to/11376_representatives/ \
   --output-dir /path/to/dRep_results/ \
   --extract-unique
 ```
@@ -102,7 +102,7 @@ huggems presence \
 | Argument | Description |
 |----------|-------------|
 | `--new-dir` | Directory containing query genome FASTA files |
-| `--input-dir` | Path to the 11,167 HuGGeMs representative genomes |
+| `--input-dir` | Path to the 11,376 HuGGeMs representative genomes |
 | `--output-dir` | Output directory for dRep results |
 | `--extract-unique` | Extract genomes not represented in HuGGeMs |
 
