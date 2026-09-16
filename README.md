@@ -102,7 +102,7 @@ huggems presence \
 | Argument | Description |
 |----------|-------------|
 | `--new-dir` | Directory containing query genome FASTA files |
-| `--rep-dir` | Path to the 11,167 HuGGeMs representative genomes |
+| `--input-dir` | Path to the 11,167 HuGGeMs representative genomes |
 | `--output-dir` | Output directory for dRep results |
 | `--extract-unique` | Extract genomes not represented in HuGGeMs |
 
