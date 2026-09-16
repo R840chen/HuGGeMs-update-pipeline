@@ -120,7 +120,7 @@ def run_drep(output_dir, genome_list_path, threads, mash_threshold=0.95):
         'dRep', 'compare', str(output_dir),
         '-p', str(threads),
         '-g', str(genome_list_path),
-        '-pa', str(p_ani),
+        '-pa', str(mash_threshold),
         '--multiround_primary_clustering',
         '--primary_chunksize', '3000',
         '-nc', '0.6',
