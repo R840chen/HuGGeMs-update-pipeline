@@ -120,7 +120,7 @@ def run_drep(output_dir, genome_list_path, threads, mash_threshold=0.95):
         'dRep', 'compare', str(output_dir),
         '-p', str(threads),
         '-g', str(genome_list_path),
-        '-pa', str(mash_threshold),
+        '-pa', str(p_ani),
         '--multiround_primary_clustering',
         '--primary_chunksize', '3000',
         '-nc', '0.6',
@@ -259,9 +259,9 @@ def extract_unique_newgenomes(drep_out, new_dir, input_dir, unique_dest, verbose
               help='Suffix of new genome files (default: fna)')
 @click.option('--threads', default=64, type=int,
               help='Number of threads for dRep (default: 64)')
-@click.option('--mash-threshold', default=0.05, type=float,
+@click.option('--mash-threshold', default=0.95, type=float,
               help='MASH distance threshold for primary clustering, 0–1 '
-                   '(default: 0.05, roughly equivalent to 95%% MASH similarity)')
+                   '(default: 0.95, roughly equivalent to 95%% MASH similarity)')
 @click.option('--genome-list', type=click.Path(),
               help='Path to genome list file (default: <input-dir>/genome_list.txt)')
 @click.option('--dry-run', is_flag=True,
