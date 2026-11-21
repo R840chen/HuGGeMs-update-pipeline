@@ -1,6 +1,6 @@
 # HuGGeMs-update-pipeline
 
-A pipeline used to update the **Human Gut Microbial Gene Markers (HuGGeMs)** dataset — from new genome input to a fully updated marker set ready for metagenome profiling.
+A pipeline used to update the **Human Gut Microbial Genetic Markers (HuGGeMs)** dataset — from new genome input to a fully updated marker set ready for metagenome profiling.
 
 ---
 
