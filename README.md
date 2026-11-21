@@ -48,7 +48,7 @@ Given new genomes not yet represented in HuGGeMs, this part:
 
 Three datasets are required before running the pipeline.
 
-### 1. HuGGeMs Representative Clusters (11,167 genomes)
+### 1. HuGGeMs Representative Clusters (11,376 genomes)
 Used by **Part I** for genome distance comparisons.
 
 **Download:** [https://zenodo.org/records/19601390](https://zenodo.org/records/19601390)
